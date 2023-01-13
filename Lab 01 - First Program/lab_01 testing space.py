@@ -1,3 +1,5 @@
+# this is my python file with comments and code
+#
 # the pound symbol is how to make comments
 #
 # let's print hello world, or a variation therof
