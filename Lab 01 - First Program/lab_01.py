@@ -1,3 +1,5 @@
+print("Some notes for myself:")
+print("__________")
 print("I like to use print statements with triple \" marks.")
 print("""
 When I do that, I like to write my code with the \"\"\" before and after my block of text,
