@@ -95,7 +95,7 @@ arcade.draw_circle_filled(330, 440, 5, arcade.color.DIM_GRAY)
 arcade.draw_circle_filled(320, 440, 2, arcade.color.HONEYDEW)
 arcade.draw_circle_filled(330, 440, 2, arcade.color.HONEYDEW)
 # Draw a smile.
-arcade.draw_arc_filled(325, 430, 15, 10, (0,0,0), 170, 370)
+arcade.draw_arc_filled(325, 430, 15, 10, (0, 0, 0), 170, 370)
 
 # Try to draw player 2.  Remember that a "sprite" will be 50 x 50 pixels.  This one faces right.
 # Start with his feet.
@@ -123,7 +123,7 @@ arcade.draw_circle_filled(620, 140, 5, arcade.color.DIM_GRAY)
 arcade.draw_circle_filled(623, 140, 2, arcade.color.HONEYDEW)
 arcade.draw_circle_filled(618, 140, 2, arcade.color.HONEYDEW)
 # Draw a smile.
-arcade.draw_arc_filled(615, 130, 15, 10, (0,0,0), 170, 370)
+arcade.draw_arc_filled(615, 130, 15, 10, (0, 0, 0), 170, 370)
 
 # Draw a couple blocks on the stage.
 arcade.draw_rectangle_filled(500, 250, 50, 50, arcade.csscolor.GOLD)
@@ -144,26 +144,26 @@ arcade.draw_triangle_filled(845, 400, 800, 420, 845, 440, arcade.csscolor.WHITE)
 
 # Add some clouds in the sky.
 # Cloud 1:
-arcade.draw_ellipse_filled(150, 500, 200, 25, (255,255,255))
-arcade.draw_circle_filled(100, 500, 20, (255,255,255))
-arcade.draw_circle_filled(125, 500, 25, (255,255,255))
-arcade.draw_circle_filled(150, 500, 20, (255,255,255))
-arcade.draw_circle_filled(175, 500, 25, (255,255,255))
-arcade.draw_circle_filled(200, 500, 20, (255,255,255))
+arcade.draw_ellipse_filled(150, 500, 200, 25, (255, 255, 255))
+arcade.draw_circle_filled(100, 500, 20, (255, 255, 255))
+arcade.draw_circle_filled(125, 500, 25, (255, 255, 255))
+arcade.draw_circle_filled(150, 500, 20, (255, 255, 255))
+arcade.draw_circle_filled(175, 500, 25, (255, 255, 255))
+arcade.draw_circle_filled(200, 500, 20, (255, 255, 255))
 # Cloud 2:
-arcade.draw_ellipse_filled(450, 530, 200, 25, (255,255,255))
-arcade.draw_circle_filled(400, 530, 20, (255,255,255))
-arcade.draw_circle_filled(425, 530, 25, (255,255,255))
-arcade.draw_circle_filled(450, 530, 20, (255,255,255))
-arcade.draw_circle_filled(475, 530, 25, (255,255,255))
-arcade.draw_circle_filled(500, 530, 20, (255,255,255))
+arcade.draw_ellipse_filled(450, 530, 200, 25, (255, 255, 255))
+arcade.draw_circle_filled(400, 530, 20, (255, 255, 255))
+arcade.draw_circle_filled(425, 530, 25, (255, 255, 255))
+arcade.draw_circle_filled(450, 530, 20, (255, 255, 255))
+arcade.draw_circle_filled(475, 530, 25, (255, 255, 255))
+arcade.draw_circle_filled(500, 530, 20, (255, 255, 255))
 # Cloud 3:
-arcade.draw_ellipse_filled(850, 520, 200, 25, (255,255,255))
-arcade.draw_circle_filled(800, 520, 20, (255,255,255))
-arcade.draw_circle_filled(825, 520, 25, (255,255,255))
-arcade.draw_circle_filled(850, 520, 20, (255,255,255))
-arcade.draw_circle_filled(875, 520, 25, (255,255,255))
-arcade.draw_circle_filled(900, 520, 20, (255,255,255))
+arcade.draw_ellipse_filled(850, 520, 200, 25, (255, 255, 255))
+arcade.draw_circle_filled(800, 520, 20, (255, 255, 255))
+arcade.draw_circle_filled(825, 520, 25, (255, 255, 255))
+arcade.draw_circle_filled(850, 520, 20, (255, 255, 255))
+arcade.draw_circle_filled(875, 520, 25, (255, 255, 255))
+arcade.draw_circle_filled(900, 520, 20, (255, 255, 255))
 
 # Finish drawing!
 arcade.finish_render()
