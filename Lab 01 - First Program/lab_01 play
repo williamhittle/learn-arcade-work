@@ -3,3 +3,21 @@ this is just a file where I can type stuff, like a whole file of comments
 It can maybe be handy to use this if I have lots of notes or explanations I want to type just for myself
 
 The lab_01.py is the file that won't have comments and is all code set to go.
+
+___
+class 3 : Jan 17
+
+you can run one python command at a time by typing it into the
+Python Console down below.
+It won't let you build up lines of text to execute at once, though.
+
+Python is smart enough to know that,
+if I'm not using the \ as an escape code,
+It will print it as a character.
+ie: print("hello world with a \ in it") prints as expected
+
+A brief discussion of the escape codes:
+\n - new line
+\t - tab
+\r - carriage return and overwrite (on windows)
+
