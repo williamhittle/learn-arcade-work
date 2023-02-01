@@ -1,0 +1,13 @@
+We want to write functions, because that lets me "normalize my code" (referring back to SQL phrasing).
+Meaning that instead of writing 10 lines of code to draw a tree
+and then writing that code 5 times each (for 50 total lines),
+I can write 1 function and call it 5 times using different inputs.
+
+
+Note that x += 1 and x -= 1 are functionally the same as x = x + 1 and x = x - 1.
+That's new symbol stuff to me.
+
+I can import my libraries, define my functions, then define a function that runs the functions I want,
+and then at last call that one function.
+
+Why does it think the extra blank lines before my defined functions is good?
