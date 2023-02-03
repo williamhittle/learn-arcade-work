@@ -17,7 +17,8 @@ CHARACTER_2_COLOR = arcade.csscolor.SEA_GREEN
 
 def draw_ground():
     """ This will draw the ground.  It will be a rectangle across the whole screen, 100 pixels high.
-    Remember that my 'block size' is 50 by 50. """
+    Remember that my 'block size' is 50 by 50.
+    I read about for loops, so let's put that to use in a basic way to draw the horizontal lines. """
     arcade.draw_lrtb_rectangle_filled(0, SCREEN_WIDTH, 100, 0, arcade.csscolor.DARK_RED)
     for i in range(5):
         arcade.draw_line(0, 100-20*i, SCREEN_WIDTH, 100-20*i, arcade.csscolor.BLACK, 2)
@@ -148,11 +149,38 @@ def on_draw(delta_time):
     draw_question_block(650, 250)
     draw_flagpole(850, 100)
     draw_flag(870, 350)
-    draw_big_cloud(300, 500)
-    draw_big_cloud(650, 475)
-    draw_small_cloud(500, 450)
-    draw_small_cloud(900, 550)
+    draw_big_cloud(on_draw.big_cloud1_x, 500)
+    draw_big_cloud(on_draw.big_cloud2_x, 475)
+    draw_small_cloud(on_draw.small_cloud1_x, 450)
+    draw_small_cloud(on_draw.small_cloud2_x, 550)
     draw_character_standing(500, 100, CHARACTER_1_COLOR)
+
+    """To get stuff to move, I want to create some variables associated with different functions/images.
+    If I put these in place of static numbers for the coordinates above, things can move as on_draw iterates.
+    Then if I put an if statement in to reset the cloud once it moves off screen, they'll come back around. """
+    if on_draw.big_cloud1_x > SCREEN_WIDTH:
+        on_draw.big_cloud1_x = 0
+    else:
+        on_draw.big_cloud1_x += 2
+    if on_draw.big_cloud2_x > SCREEN_WIDTH:
+        on_draw.big_cloud2_x = 0
+    else:
+        on_draw.big_cloud2_x += 2
+    if on_draw.small_cloud1_x > SCREEN_WIDTH:
+        on_draw.small_cloud1_x = 0
+    else:
+        on_draw.small_cloud1_x += 4
+    if on_draw.small_cloud2_x > SCREEN_WIDTH:
+        on_draw.small_cloud2_x = 0
+    else:
+        on_draw.small_cloud2_x += 4
+
+
+# And to get that to work, I have to now initialize these variables, but not in the on_draw function.
+on_draw.big_cloud1_x = 400
+on_draw.big_cloud2_x = 700
+on_draw.small_cloud1_x = 200
+on_draw.small_cloud2_x = 500
 
 
 def main():

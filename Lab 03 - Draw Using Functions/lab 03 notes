@@ -11,3 +11,29 @@ I can import my libraries, define my functions, then define a function that runs
 and then at last call that one function.
 
 Why does it think the extra blank lines before my defined functions is good?
+
+2/02/23 : add an if statement to get the incrementing position for a moving image to either stop, or reverse
+
+
+    if on_draw.big_cloud1_x > SCREEN_WIDTH:
+        on_draw.big_cloud1_x = 0
+    else:
+        on_draw.big_cloud1_x += 1
+    if on_draw.big_cloud2_x > SCREEN_WIDTH:
+        on_draw.big_cloud2_x = 0
+    else:
+        on_draw.big_cloud2_x += 1
+    if on_draw.small_cloud1_x > SCREEN_WIDTH:
+        on_draw.small_cloud1_x = 0
+    else:
+        on_draw.small_cloud1_x +=2
+    if on_draw.small_cloud2_x > SCREEN_WIDTH:
+        on_draw.small_cloud2_x = 0
+    else:
+        on_draw.small_cloud2_x +=2
+
+
+    on_draw.big_cloud1_x += 1
+    on_draw.big_cloud2_x += 1
+    on_draw.small_cloud1_x += 2
+    on_draw.small_cloud2_x += 2
