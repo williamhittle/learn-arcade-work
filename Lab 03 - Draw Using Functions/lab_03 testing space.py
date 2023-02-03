@@ -6,13 +6,13 @@ I'm going to draw my game image from lab 2, and hopefully make it better now tha
 # Import the library.
 import arcade
 
-# Set up my screen size variables so that I can call them later.
+# Set up my screen size variables and any other global variables so that I can call them later.
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 600
 CHARACTER_1_COLOR = arcade.csscolor.CRIMSON
 CHARACTER_2_COLOR = arcade.csscolor.SEA_GREEN
 
-# All my actions are going to be defined here, and then called by my 'main' program.
+# All my functions are going to be defined here, and then called by my 'main' program.
 
 
 def draw_ground():
@@ -36,7 +36,8 @@ def draw_brick_stairs():
     It uses the draw_brick function I just made.
     This way, my main drawing function calls this one time, and if I want to change the stair design,
     I can do it here instead of in the final drawing.
-    I can probably do this with a couple nested for loops, but I can't figure that out, yet. """
+    I can probably do this with a couple nested for loops, but I can't figure that out, yet.
+    I could also make this require an x,y coordinate in case I want the stairs at some other position. """
     draw_brick(50, 100)
     draw_brick(100, 100)
     draw_brick(150, 100)
@@ -181,6 +182,8 @@ on_draw.big_cloud1_x = 400
 on_draw.big_cloud2_x = 700
 on_draw.small_cloud1_x = 200
 on_draw.small_cloud2_x = 500
+
+""" I could also animate the flag and add a player two sliding down it, but I think this is enough for now. """
 
 
 def main():
