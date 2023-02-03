@@ -141,10 +141,11 @@ def on_draw(delta_time):
     """ This draws everything. """
     arcade.start_render()
 
-    # Insert all draw functions here, using x,y coordinates.
+    # Insert all draw functions here, using x,y coordinates and other inputs as necessary.
     draw_ground()
     draw_brick_stairs()
-    draw_question_block(500, 250)
+    draw_question_block(450, 250)
+    draw_question_block(650, 250)
     draw_flagpole(850, 100)
     draw_flag(870, 350)
     draw_big_cloud(300, 500)
