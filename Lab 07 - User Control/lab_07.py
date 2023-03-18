@@ -10,9 +10,13 @@ MOVEMENT_SPEED = 3
 
 # import my background drawing functions here (without the extra comments about what they do):
 def draw_ground():
+    """ This will draw instructions for this program, in addition to the ground that I had before. """
     arcade.draw_lrtb_rectangle_filled(0, SCREEN_WIDTH, 100, 0, arcade.csscolor.DARK_RED)
     for i in range(5):
         arcade.draw_line(0, 100-20*i, SCREEN_WIDTH, 100-20*i, arcade.csscolor.BLACK, 2)
+        arcade.draw_text("Use WASD to move the green bro.", 5, 5, arcade.color.WHITE, 10)
+        arcade.draw_text("Use the arrow keys to move the red bro.", 5, 25, arcade.color.WHITE, 10)
+        arcade.draw_text("Use the mouse to move the angry sun.", 5, 45, arcade.color.WHITE, 10)
 
 
 def draw_brick(x, y):
@@ -116,8 +120,19 @@ def draw_character_standing(x, y, z):
 
 
 def draw_angry_sun(x, y):
-    arcade.draw_circle_filled(x, y, 10, arcade.color.YELLOW)
-    # make it better later
+    arcade.draw_circle_filled(x, y, 30, arcade.color.YELLOW)
+    arcade.draw_circle_outline(x, y, 30, arcade.color.BLACK)
+    arcade.draw_line(x-40, y, x-30, y, arcade.color.BLACK)
+    arcade.draw_line(x+40, y, x+30, y, arcade.color.BLACK)
+    arcade.draw_line(x, y+40, x, y+30, arcade.color.BLACK)
+    arcade.draw_line(x, y-40, x, y-30, arcade.color.BLACK)
+    arcade.draw_line(x-30, y-30, x-20, y-20, arcade.color.BLACK)
+    arcade.draw_line(x-30, y+30, x-20, y+20, arcade.color.BLACK)
+    arcade.draw_line(x+30, y-30, x+20, y-20, arcade.color.BLACK)
+    arcade.draw_line(x+30, y+30, x+20, y+20, arcade.color.BLACK)
+    arcade.draw_arc_filled(x-10, y+15, 10, 10, arcade.color.BLACK, 180, 360)
+    arcade.draw_arc_filled(x+10, y+15, 10, 10, arcade.color.BLACK, 180, 360)
+    arcade.draw_arc_outline(x, y-20, 30, 30, arcade.csscolor.BLACK, 0, 180)
 
 
 # Make a class for drawing my 'player'
@@ -218,8 +233,9 @@ class MyGame(arcade.Window):
         # Set the background color
         arcade.set_background_color(arcade.csscolor.DODGER_BLUE)
 
-        # Create my Bro with some attributes.
+        # Create my Bros with some attributes.
         self.bro1 = Bro(400, 100, 0, 0, arcade.csscolor.CRIMSON)
+        self.bro2 = Bro(250, 350, 0, 0, arcade.csscolor.GREEN)
 
         # Create my angry sun with some attributes.
         self.sun1 = Sun(500, 500, 0, 0)
@@ -245,10 +261,12 @@ class MyGame(arcade.Window):
         # Be sure to draw the objects that move by input.
         self.bro1.draw()
         self.sun1.draw()
+        self.bro2.draw()
 
     # Now to make the bro move when I do stuff.  Start by making sure it updates.
     def update(self, delta_time):
         self.bro1.update()
+        self.bro2.update()
 
     # Make the image move when you press a direction.
     def on_key_press(self, key, modifiers):
@@ -260,6 +278,14 @@ class MyGame(arcade.Window):
             self.bro1.change_y = MOVEMENT_SPEED
         elif key == arcade.key.DOWN:
             self.bro1.change_y = -MOVEMENT_SPEED
+        elif key == arcade.key.W:
+            self.bro2.change_y = MOVEMENT_SPEED
+        elif key == arcade.key.A:
+            self.bro2.change_x = -MOVEMENT_SPEED
+        elif key == arcade.key.S:
+            self.bro2.change_y = -MOVEMENT_SPEED
+        elif key == arcade.key.D:
+            self.bro2.change_x = MOVEMENT_SPEED
 
     # Make the image stop moving when you let go of the key.
     def on_key_release(self, key, modifiers):
@@ -267,6 +293,10 @@ class MyGame(arcade.Window):
             self.bro1.change_x = 0
         if key == arcade.key.UP or key == arcade.key.DOWN:
             self.bro1.change_y = 0
+        if key == arcade.key.A or key == arcade.key.D:
+            self.bro2.change_x = 0
+        if key == arcade.key.W or key == arcade.key.S:
+            self.bro2.change_y = 0
 
     # Now also make the sun move.  For this project, it will only be a simple 'move with mouse' thing.
     def on_mouse_motion(self, x, y, dx, dy):
