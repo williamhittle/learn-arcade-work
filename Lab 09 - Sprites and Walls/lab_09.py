@@ -17,7 +17,7 @@ GEM_SPRITE_SCALING = 0.5
 
 DEFAULT_SCREEN_WIDTH = 800
 DEFAULT_SCREEN_HEIGHT = 600
-SCREEN_TITLE = "Sprite Move with Scrolling Screen Example"
+SCREEN_TITLE = "Lab 09: Robot gem maze of DOOOOOOM!"
 
 # How many pixels to keep as a minimum margin between the character
 # and the edge of the screen.
@@ -368,6 +368,7 @@ class MyGame(arcade.Window):
         # arcade.draw_text(text, 10, 10, arcade.color.BLACK_BEAN, 20)
         output = "Gems collected: " + str(self.score)
         arcade.draw_text(output, 10, 10, arcade.color.BLACK, 20)
+        arcade.draw_text("Use the arrow keys to move around and collect gems.", 300, 10, arcade.color.BLACK, 10)
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
