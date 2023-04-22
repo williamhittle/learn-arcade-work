@@ -21,6 +21,16 @@ Enemies don't just sit around waiting for you to bump into them and attack.  The
 import arcade
 from pyglet.math import Vec2
 
+# Import my levels, saved in other files to save space in this code.
+# (Also, it theoretically makes it easier to create a level then pull it in here.)
+# Those files have the Level class built into them, so I can pull in any of them I want.
+
+import map0
+import map1
+import map2
+
+# Define some constants
+
 PLAYER_SPRITE_SCALING = 0.45
 BORDER_SPRITE_SCALING = 0.5
 BOX_SPRITE_SCALING = 0.5
@@ -45,225 +55,83 @@ CAMERA_SPEED = 0.1
 PLAYER_MOVEMENT_SPEED = 7
 
 
-# Create a class for each level:
-class Level:
-    """
-    Each level will have its own wall list, blue and green gem list, gear list, and enemy list.
-    """
+# Create a start screen with instructions:
+class InstructionView(arcade.View):
+    """ Class to handle the start screen. """
+
+    def on_show_view(self):
+        """ Called when switching to this view.  Should happen after advancing from game over screen."""
+        arcade.set_background_color(arcade.color.WHITE)
+        arcade.set_viewport(0, self.window.width, 0, self.window.height)
+
+    def on_draw(self):
+        """ Draw the start screen. """
+        self.clear()
+        arcade.draw_text("Escape from ROBO-prison", 150, 400, arcade.color.BLACK, font_size=30)
+        arcade.draw_text("Press the space bar to begin. ", 50, 300, arcade.color.BLACK, font_size=20)
+        arcade.draw_text("Hitting robots will reduce your hit points. ", 50, 200, arcade.color.BLACK, font_size=20)
+        arcade.draw_text("Run out of hit points and it's Game Over. ", 50, 100, arcade.color.BLACK, font_size=20)
+
+    def on_key_press(self, key, _modifiers):
+        """ The button to go from the start screen to the game. Can have other secret options. """
+        if key == arcade.key.SPACE:
+            game_view = GameView()
+            game_view.setup()
+            self.window.show_view(game_view)
+
+
+# Create the game over screen:
+class GameOverView(arcade.View):
+    """ This is what the player sees when they encounter a robot. """
 
     def __init__(self):
-        self.player_list = None
-        self.wall_list = None
-        self.blue_gem_list = None
-        self.green_gem_list = None
-        self.gear_list = None
-        self.enemy_list = None
-        self.portal_list = None
-        self.gear_req = 0
+        """ Here is what happens when we switch to this view. """
+        super().__init__()
+        arcade.set_viewport(0, DEFAULT_SCREEN_WIDTH - 1, 0, DEFAULT_SCREEN_HEIGHT - 1)
+
+    def on_draw(self):
+        """ Draw this view. """
+        self.clear()
+        arcade.draw_text("Game over.", 150, 400, arcade.color.BLACK, font_size=30)
+        arcade.draw_text("Press escape to restart the game. ", 50, 200, arcade.color.BLACK, font_size=20)
+
+    def on_key_press(self, key, _modifiers):
+        """ The button to press to go back to the first level.  Again, potential secrets here. """
+        if key == arcade.key.ESCAPE:
+            game_view = GameView()
+            game_view.setup()
+            self.window.show_view(game_view)
 
 
-def setup_level_0():
-    level = Level()
+class VictoryView(arcade.View):
+    """ This is the screen you see when you escape. """
 
-    # Sprites in the default level, 0:
-    level.player_list = arcade.SpriteList()
-    level.wall_list = arcade.SpriteList()
-    level.blue_gem_list = arcade.SpriteList()
-    level.green_gem_list = arcade.SpriteList()
-    level.gear_list = arcade.SpriteList()
-    level.enemy_list = arcade.SpriteList()
-    level.portal_list = arcade.SpriteList()
-    level.color = arcade.color.PINK
+    def __init__(self):
+        """ Set it up. """
+        super().__init__()
+        arcade.set_viewport(0, DEFAULT_SCREEN_WIDTH - 1, 0, DEFAULT_SCREEN_HEIGHT - 1)
 
-    # Gear count required to access portal to next level:
-    level.gear_req = 1
+    def on_draw(self):
+        """ Draw the view. """
+        self.clear()
+        arcade.draw_text("You escaped!", 150, 400, arcade.color.BLACK, font_size=30)
+        arcade.draw_text("Press escape to go back to the start screen and play again. ", 50, 200, arcade.color.BLACK,
+                         font_size=20)
 
-    # Start by placing the bottom border:
-    for x in range(0, 20):
-        border_wall = arcade.Sprite(":resources:images/tiles/brickTextureWhite.png", BORDER_SPRITE_SCALING)
-        border_wall.center_x = x * 64
-        border_wall.center_y = 0
-        level.wall_list.append(border_wall)
-    # Here's the top border:
-    for x in range(0, 20):
-        border_wall = arcade.Sprite(":resources:images/tiles/brickTextureWhite.png", BORDER_SPRITE_SCALING)
-        border_wall.center_x = x * 64
-        border_wall.center_y = 960
-        level.wall_list.append(border_wall)
-    # Place left border.
-    for y in range(1, 15):
-        border_wall = arcade.Sprite(":resources:images/tiles/brickTextureWhite.png", BORDER_SPRITE_SCALING)
-        border_wall.center_x = 0
-        border_wall.center_y = y * 64
-        level.wall_list.append(border_wall)
-    # Place the right border.
-    for y in range(1, 15):
-        border_wall = arcade.Sprite(":resources:images/tiles/brickTextureWhite.png", BORDER_SPRITE_SCALING)
-        border_wall.center_x = 1216
-        border_wall.center_y = y * 64
-        level.wall_list.append(border_wall)
-
-    # Put out some blue gems for the default level.
-    coordinate_list = [[5, 5],
-                       [8,9]]
-    for coordinate in coordinate_list:
-        blue_gem = arcade.Sprite(":resources:images/items/gemBlue.png", GEM_SPRITE_SCALING)
-        blue_gem.center_x = coordinate[0]*64
-        blue_gem.center_y = coordinate[1]*64
-        level.blue_gem_list.append(blue_gem)
-
-    # Put out some green gems.
-    coordinate_list = [[2, 9],
-                       [8,2]]
-    for coordinate in coordinate_list:
-        green_gem = arcade.Sprite(":resources:images/items/gemGreen.png", GEM_SPRITE_SCALING)
-        green_gem.center_x = coordinate[0]*64
-        green_gem.center_y = coordinate[1]*64
-        level.green_gem_list.append(green_gem)
-
-    # Put out the gears.
-    coordinate_list = [[11, 5],
-                       [5,12]]
-    for coordinate in coordinate_list:
-        gear = arcade.Sprite(":resources:images/enemies/saw.png", GEAR_SPRITE_SCALING)
-        gear.center_x = coordinate[0]*64
-        gear.center_y = coordinate[1]*64
-        level.gear_list.append(gear)
-
-    # Set out some boxes.
-    coordinate_list = [[3, 7],
-                       [7, 2]]
-    for coordinate in coordinate_list:
-        box = arcade.Sprite(":resources:images/tiles/boxCrate.png", BOX_SPRITE_SCALING)
-        box.center_x = coordinate[0]*64
-        box.center_y = coordinate[1]*64
-        level.wall_list.append(box)
-
-    # Put out some robots for the default level enemies.
-    coordinate_list = [[6, 6],
-                       [10, 10]]
-    for coordinate in coordinate_list:
-        robo = arcade.Sprite(":resources:images/animated_characters/robot/robot_idle.png", ENEMY_SPRITE_SCALING_1)
-        robo.center_x = coordinate[0]*64
-        robo.center_y = coordinate[1]*64
-        level.enemy_list.append(robo)
-
-    # Place the portal to the next level.
-    # This requires a certain number of gears to activate.
-    portal = arcade.Sprite(":resources:images/tiles/lockRed.png", PORTAL_SPRITE_SCALING)
-    portal.center_x = 8*64
-    portal.center_y = 4*64
-    level.portal_list.append(portal)
+    def on_key_press(self, key, _modifiers):
+        """ The button to press to go back to the start menu.  Secrets! """
+        if key == arcade.key.ESCAPE:
+            game_view = InstructionView()
+            self.window.show_view(game_view)
 
 
-    return level
-
-def setup_level_1():
-    level = Level()
-
-    # Sprites in the next level, 1:
-    level.player_list = arcade.SpriteList()
-    level.wall_list = arcade.SpriteList()
-    level.blue_gem_list = arcade.SpriteList()
-    level.green_gem_list = arcade.SpriteList()
-    level.gear_list = arcade.SpriteList()
-    level.enemy_list = arcade.SpriteList()
-    level.portal_list = arcade.SpriteList()
-    level.color = arcade.color.DODGER_BLUE
-
-    # Gear count required to access portal to next level:
-    level.gear_req = 2
-
-    # For now, the room is built the same.  Update this for new shapes.
-    # Start by placing the bottom border:
-    for x in range(0, 20):
-        border_wall = arcade.Sprite(":resources:images/tiles/brickTextureWhite.png", BORDER_SPRITE_SCALING)
-        border_wall.center_x = x * 64
-        border_wall.center_y = 0
-        level.wall_list.append(border_wall)
-    # Here's the top border:
-    for x in range(0, 20):
-        border_wall = arcade.Sprite(":resources:images/tiles/brickTextureWhite.png", BORDER_SPRITE_SCALING)
-        border_wall.center_x = x * 64
-        border_wall.center_y = 960
-        level.wall_list.append(border_wall)
-    # Place left border.
-    for y in range(1, 15):
-        border_wall = arcade.Sprite(":resources:images/tiles/brickTextureWhite.png", BORDER_SPRITE_SCALING)
-        border_wall.center_x = 0
-        border_wall.center_y = y * 64
-        level.wall_list.append(border_wall)
-    # Place the right border.
-    for y in range(1, 15):
-        border_wall = arcade.Sprite(":resources:images/tiles/brickTextureWhite.png", BORDER_SPRITE_SCALING)
-        border_wall.center_x = 1216
-        border_wall.center_y = y * 64
-        level.wall_list.append(border_wall)
-
-    # Put out some blue gems for the default level.
-    coordinate_list = [[19, 15],
-                       [18, 3]]
-    for coordinate in coordinate_list:
-        blue_gem = arcade.Sprite(":resources:images/items/gemBlue.png", GEM_SPRITE_SCALING)
-        blue_gem.center_x = coordinate[0]*64
-        blue_gem.center_y = coordinate[1]*64
-        level.blue_gem_list.append(blue_gem)
-
-    # Put out some green gems.
-    coordinate_list = [[1, 2],
-                       [3, 9]]
-    for coordinate in coordinate_list:
-        green_gem = arcade.Sprite(":resources:images/items/gemGreen.png", GEM_SPRITE_SCALING)
-        green_gem.center_x = coordinate[0]*64
-        green_gem.center_y = coordinate[1]*64
-        level.green_gem_list.append(green_gem)
-
-    # Put out the gears.
-    coordinate_list = [[3, 10],
-                       [14, 2]]
-    for coordinate in coordinate_list:
-        gear = arcade.Sprite(":resources:images/enemies/saw.png", GEAR_SPRITE_SCALING)
-        gear.center_x = coordinate[0]*64
-        gear.center_y = coordinate[1]*64
-        level.gear_list.append(gear)
-
-    # Set out some boxes.
-    coordinate_list = [[13, 7],
-                       [17, 2]]
-    for coordinate in coordinate_list:
-        box = arcade.Sprite(":resources:images/tiles/boxCrate.png", BOX_SPRITE_SCALING)
-        box.center_x = coordinate[0]*64
-        box.center_y = coordinate[1]*64
-        level.wall_list.append(box)
-
-    # Put out some robots for the default level enemies.
-    coordinate_list = [[16, 6],
-                       [4, 10]]
-    for coordinate in coordinate_list:
-        robo = arcade.Sprite(":resources:images/animated_characters/robot/robot_idle.png", ENEMY_SPRITE_SCALING_1)
-        robo.center_x = coordinate[0]*64
-        robo.center_y = coordinate[1]*64
-        level.enemy_list.append(robo)
-
-    # Only have a portal in the final level if there's another level to go to, or the game breaks.
-    # # Place the portal to the next level.
-    # # This requires a certain number of gears to activate.
-    # portal = arcade.Sprite(":resources:images/tiles/lockRed.png", PORTAL_SPRITE_SCALING)
-    # portal.center_x = 15 * 64
-    # portal.center_y = 14 * 64
-    # level.portal_list.append(portal)
-
-    arcade.set_background_color(arcade.color.PINK)
-
-    return level
-
-
-class MyGame(arcade.Window):
+# Create the game itself:
+class GameView(arcade.View):
     """ Making my game. """
 
-    def __init__(self, width, height, title):
+    def __init__(self):
         """ Initializer """
-        super().__init__(width, height, title, resizable=True)
+        super().__init__()
 
         # My sprite lists
         self.player_list = None
@@ -272,6 +140,9 @@ class MyGame(arcade.Window):
         self.green_gem_list = None
         self.gear_list = None
         self.enemy_list = None
+        self.portal_list = None
+        self.width = DEFAULT_SCREEN_WIDTH
+        self.height = DEFAULT_SCREEN_HEIGHT
 
         # Set up the player stuff
         self.player_sprite = None
@@ -281,8 +152,10 @@ class MyGame(arcade.Window):
         self.blue_gem_count = 0
         self.gear_count = 0
         self.gear_req = 0
+        self.hit_points = 3
 
         # To refine combat, info about combos will have to go here.  At first, combat is won just by collision.
+        # The simpler implementation is just to have contact return the player to level 0, or end the game.
 
         # Physics engine setup:
         self.physics_engine = None
@@ -292,6 +165,7 @@ class MyGame(arcade.Window):
         self.right_pressed = False
         self.up_pressed = False
         self.down_pressed = False
+        self.enter_pressed = False
 
         # Include sounds for gem and gear collection, and robot defeat.
         self.gem_sound = arcade.load_sound(":resources:sounds/coin5.wav")
@@ -318,39 +192,42 @@ class MyGame(arcade.Window):
 
         # Initialize the level and other counts that are visible to the player.
 
-        self.level = 0
+        self.current_level = 0
         self.green_gem_count = 0
         self.blue_gem_count = 0
         self.gear_count = 0
 
         # Set up the player.
 
-        self.player_sprite = arcade.Sprite(":resources:images/animated_characters/male_person/malePerson_idle.png", PLAYER_SPRITE_SCALING)
-        self.player_sprite.center_x = 400
-        self.player_sprite.center_y = 300
+        self.player_sprite = arcade.Sprite(":resources:images/animated_characters/male_person/malePerson_idle.png",
+                                           PLAYER_SPRITE_SCALING)
+        self.player_sprite.center_x = 1*64
+        self.player_sprite.center_y = 1*64
         self.player_list.append(self.player_sprite)
 
         # Set up the list into which I shall add my levels.
+        # Add them in order, so that the position in my levels list equals the number of the level.
         self.levels = []
 
         # Set up level 0, the default level.
-        level = setup_level_0()
+        level = map0.setup_level_0()
         self.levels.append(level)
 
         # Set up level 1.
-        level = setup_level_1()
+        level = map1.setup_level_1()
         self.levels.append(level)
 
-        # Starting level:
-        self.current_level = 0
+        # Set up level 2.
+        level = map2.setup_level_2()
+        self.levels.append(level)
+
+        # Set up additional levels here:
 
         # Set up the physics engine for this level:
         self.physics_engine = arcade.PhysicsEngineSimple(self.player_sprite, self.levels[self.current_level].wall_list)
 
+        # Set up the required number of gears to get through the portal of this level:
         self.gear_req = self.levels[self.current_level].gear_req
-
-        # Set the background color
-        arcade.set_background_color(arcade.color.DIM_GRAY)
 
     def on_draw(self):
         """ Render the screen. """
@@ -377,11 +254,21 @@ class MyGame(arcade.Window):
         arcade.draw_rectangle_filled(self.width // 2,
                                      20,
                                      self.width,
-                                     40,
+                                     110,
                                      arcade.color.ALMOND)
-        output = "gear count: " + str(self.gear_count) + "   gear req: " + str(self.levels[self.current_level].gear_req)
-        arcade.draw_text(output, 10, 10, arcade.color.BLACK, 20)
-        arcade.draw_text("current level: " + str(self.current_level), 350, 10, arcade.color.BLACK, 10)
+        output1 = "gears: " + str(self.gear_count) + "   gears required: " +\
+                  str(self.levels[self.current_level].gear_req)
+        output2 = "current level: " + str(self.current_level) + "   hit points: " + str(self.hit_points)
+        output3 = "blue gems: " + str(self.blue_gem_count) + "   green gems: " + str(self.green_gem_count)
+        instructions1 = "Use the arrow keys to navigate the stage. "
+        instructions2 = "Gather enough gears to open the locked door to the next level. "
+        instructions3 = "Collect blue and green gems for points. "  # (Later they'll benefit combat.)
+        arcade.draw_text(output1, 10, 30, arcade.color.BLACK, 13)
+        arcade.draw_text(output2, 10, 50, arcade.color.BLACK, 13)
+        arcade.draw_text(output3, 10, 10, arcade.color.BLACK, 13)
+        arcade.draw_text(instructions1, 350, 50, arcade.color.BLACK, 10)
+        arcade.draw_text(instructions2, 350, 30, arcade.color.BLACK, 10)
+        arcade.draw_text(instructions3, 350, 10, arcade.color.BLACK, 10)
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
@@ -415,9 +302,12 @@ class MyGame(arcade.Window):
         """ Movement and game logic. """
 
         # Find out which gems and gears have collided with the player.
-        blue_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.levels[self.current_level].blue_gem_list)
-        green_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.levels[self.current_level].green_gem_list)
-        gear_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.levels[self.current_level].gear_list)
+        blue_hit_list = arcade.check_for_collision_with_list(self.player_sprite,
+                                                             self.levels[self.current_level].blue_gem_list)
+        green_hit_list = arcade.check_for_collision_with_list(self.player_sprite,
+                                                              self.levels[self.current_level].green_gem_list)
+        gear_hit_list = arcade.check_for_collision_with_list(self.player_sprite,
+                                                             self.levels[self.current_level].gear_list)
         # Look through those lists and remove/update sprites that have been collected.
         for gem in blue_hit_list:
             gem.remove_from_sprite_lists()
@@ -433,14 +323,16 @@ class MyGame(arcade.Window):
             arcade.play_sound(self.gear_sound)
 
         # Find out which enemies have collided with the player.
-        enemy_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.enemy_list)
+        enemy_hit_list = arcade.check_for_collision_with_list(self.player_sprite,
+                                                              self.levels[self.current_level].enemy_list)
         # Do stuff when an enemy is hit.  At first, just remove it, like a collected item.  Add combat later.
         for robo in enemy_hit_list:
             robo.remove_from_sprite_lists()
             arcade.play_sound(self.robo_sound)
-
-
-
+            self.hit_points -= 1
+            if self.hit_points == 0:
+                view = GameOverView()
+                self.window.show_view(view)
 
         # Calculate speed based on the keys pressed
         self.player_sprite.change_x = 0
@@ -462,15 +354,23 @@ class MyGame(arcade.Window):
 
         """ Insert the logic to check which level we're in, based on if the player has reached the portal with enough 
         gears.  This should increase the current level by 1, and then update stuff. """
-        portal_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.levels[self.current_level].portal_list)
-        for portal in portal_hit_list:
-            if self.gear_count > self.levels[self.current_level].gear_req:
-                portal.remove_from_sprite_lists()
-        if len(portal_hit_list)>0 and self.gear_count >= self.gear_req:
+        portal_hit_list = arcade.check_for_collision_with_list(self.player_sprite,
+                                                               self.levels[self.current_level].portal_list)
+        # Add some functionality that lets a player go back to previous levels.
+        # That may require different sprites with some kind of color indication of what level you'd go back to.
+        if len(portal_hit_list) > 0 and self.gear_count >= self.levels[self.current_level].gear_req:
             self.current_level += 1
-            self.physics_engine = arcade.PhysicsEngineSimple(self.player_sprite, self.levels[self.current_level].wall_list)
-            self.gear_req = self.levels[self.current_level].gear_req
-            arcade.set_background_color(self.levels[self.current_level].color)
+            if self.current_level == 3:
+                view = VictoryView()
+                self.window.show_view(view)
+            elif self.current_level < 3:
+                # self.player_sprite.center_x = 1 * 64
+                # self.player_sprite.center_y = 1 * 64
+                # Use this code if you want to reset the player to a specific start point with each level.
+                self.physics_engine = arcade.PhysicsEngineSimple(self.player_sprite,
+                                                                 self.levels[self.current_level].wall_list)
+                self.gear_req = self.levels[self.current_level].gear_req
+                arcade.set_background_color(self.levels[self.current_level].color)
 
         # Scroll the screen to the player
         self.scroll_to_player()
@@ -485,19 +385,22 @@ class MyGame(arcade.Window):
                         self.player_sprite.center_y - self.height / 2)
         self.camera_sprites.move_to(position, CAMERA_SPEED)
 
-    def on_resize(self, width, height):
+    # This doesn't seem to work with the View method.  Figure out why.
+    # def on_resize(self, width, height):
+    #
+    #     """
+    #     Handle the user grabbing the edge and resizing the window.
+    #     """
+    #
+    #     self.camera_sprites.resize(int(width), int(height))
+    #     self.camera_gui.resize(int(width), int(height))
 
-        """
-        Handle the user grabbing the edge and resizing the window.
-        """
-
-        self.camera_sprites.resize(int(width), int(height))
-        self.camera_gui.resize(int(width), int(height))
 
 def main():
     """ Main function """
-    window = MyGame(DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, SCREEN_TITLE)
-    window.setup()
+    window = arcade.Window(DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, SCREEN_TITLE)
+    start_view = InstructionView()
+    window.show_view(start_view)
     arcade.run()
 
 
