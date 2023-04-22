@@ -30,6 +30,19 @@ CAMERA_SPEED = 0.1
 PLAYER_MOVEMENT_SPEED = 7
 
 
+# Create a class for each level:
+class Level:
+    """
+    Each level will have its own wall list, blue and green gem list, gear list, and enemy list.
+    """
+
+    def __init__(self):
+        self.wall_list = None
+        self.blue_gem_list = None
+        self.green_gem_list = None
+        self.gear_list = None
+        self.enemy_list = None
+
 class MyGame(arcade.Window):
     """ Main application class. """
 
