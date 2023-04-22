@@ -43,6 +43,108 @@ CAMERA_SPEED = 0.1
 # This is how fast the character moves.
 PLAYER_MOVEMENT_SPEED = 7
 
+
+# Create a class for each level:
+class Level:
+    """
+    Each level will have its own wall list, blue and green gem list, gear list, and enemy list.
+    """
+
+    def __init__(self):
+        self.player_list = None
+        self.wall_list = None
+        self.blue_gem_list = None
+        self.green_gem_list = None
+        self.gear_list = None
+        self.enemy_list = None
+
+
+def setup_level_0():
+    level = Level()
+
+    # Sprites in the default level, 0:
+    level.player_list = arcade.SpriteList()
+    level.wall_list = arcade.SpriteList()
+    level.blue_gem_list = arcade.SpriteList()
+    level.green_gem_list = arcade.SpriteList()
+    level.gear_list = arcade.SpriteList()
+    level.enemy_list = arcade.SpriteList()
+
+    # Start by placing the bottom border:
+    for x in range(0, 20):
+        border_wall = arcade.Sprite(":resources:images/tiles/brickTextureWhite.png", BORDER_SPRITE_SCALING)
+        border_wall.center_x = x * 64
+        border_wall.center_y = 0
+        level.wall_list.append(border_wall)
+    # Here's the top border:
+    for x in range(0, 20):
+        border_wall = arcade.Sprite(":resources:images/tiles/brickTextureWhite.png", BORDER_SPRITE_SCALING)
+        border_wall.center_x = x * 64
+        border_wall.center_y = 960
+        level.wall_list.append(border_wall)
+    # Place left border.
+    for y in range(1, 15):
+        border_wall = arcade.Sprite(":resources:images/tiles/brickTextureWhite.png", BORDER_SPRITE_SCALING)
+        border_wall.center_x = 0
+        border_wall.center_y = y * 64
+        level.wall_list.append(border_wall)
+    # Place the right border.
+    for y in range(1, 15):
+        border_wall = arcade.Sprite(":resources:images/tiles/brickTextureWhite.png", BORDER_SPRITE_SCALING)
+        border_wall.center_x = 1216
+        border_wall.center_y = y * 64
+        level.wall_list.append(border_wall)
+
+    # Put out some blue gems for the default level.
+    coordinate_list = [[5, 5],
+                       [8,9]]
+    for coordinate in coordinate_list:
+        blue_gem = arcade.Sprite(":resources:images/items/gemBlue.png", GEM_SPRITE_SCALING)
+        blue_gem.center_x = coordinate[0]*64
+        blue_gem.center_y = coordinate[1]*64
+        level.blue_gem_list.append(blue_gem)
+
+    # Put out some green gems.
+    coordinate_list = [[2, 9],
+                       [8,2]]
+    for coordinate in coordinate_list:
+        green_gem = arcade.Sprite(":resources:images/items/gemGreen.png", GEM_SPRITE_SCALING)
+        green_gem.center_x = coordinate[0]*64
+        green_gem.center_y = coordinate[1]*64
+        level.green_gem_list.append(green_gem)
+
+    # Put out the gears.
+    coordinate_list = [[11, 5],
+                       [5,12]]
+    for coordinate in coordinate_list:
+        gear = arcade.Sprite(":resources:images/enemies/saw.png", GEAR_SPRITE_SCALING)
+        gear.center_x = coordinate[0]*64
+        gear.center_y = coordinate[1]*64
+        level.gear_list.append(gear)
+
+    # Set out some boxes.
+    coordinate_list = [[3, 7],
+                       [7, 2]]
+    for coordinate in coordinate_list:
+        box = arcade.Sprite(":resources:images/tiles/boxCrate.png", BOX_SPRITE_SCALING)
+        box.center_x = coordinate[0]*64
+        box.center_y = coordinate[1]*64
+        level.wall_list.append(box)
+
+    # Put out some robots for the default level enemies.
+    coordinate_list = [[6, 6],
+                       [10, 10]]
+    for coordinate in coordinate_list:
+        robo = arcade.Sprite(":resources:images/animated_characters/robot/robot_idle.png", ENEMY_SPRITE_SCALING_1)
+        robo.center_x = coordinate[0]*64
+        robo.center_y = coordinate[1]*64
+        level.enemy_list.append(robo)
+
+    arcade.set_background_color(arcade.color.DODGER_BLUE)
+
+    return level
+
+
 class MyGame(arcade.Window):
     """ Making my game. """
 
@@ -60,7 +162,8 @@ class MyGame(arcade.Window):
 
         # Set up the player stuff
         self.player_sprite = None
-        self.level = 1
+        self.levels = None
+        self.current_level = 1
         self.green_gem_count = 0
         self.blue_gem_count = 0
         self.gear_count = 0
@@ -100,7 +203,7 @@ class MyGame(arcade.Window):
 
         # Initialize the level and other counts that are visible to the player.
 
-        self.level = 1
+        self.level = 0
         self.green_gem_count = 0
         self.blue_gem_count = 0
         self.gear_count = 0
@@ -112,80 +215,16 @@ class MyGame(arcade.Window):
         self.player_sprite.center_y = 300
         self.player_list.append(self.player_sprite)
 
-        # Set up the default level.
-        # Start by placing the bottom border:
-        for x in range(0, 20):
-            border_wall = arcade.Sprite(":resources:images/tiles/brickTextureWhite.png", BORDER_SPRITE_SCALING)
-            border_wall.center_x = x * 64
-            border_wall.center_y = 0
-            self.wall_list.append(border_wall)
-        # Here's the top border:
-        for x in range(0, 20):
-            border_wall = arcade.Sprite(":resources:images/tiles/brickTextureWhite.png", BORDER_SPRITE_SCALING)
-            border_wall.center_x = x * 64
-            border_wall.center_y = 960
-            self.wall_list.append(border_wall)
-        # Place left border.
-        for y in range(1, 15):
-            border_wall = arcade.Sprite(":resources:images/tiles/brickTextureWhite.png", BORDER_SPRITE_SCALING)
-            border_wall.center_x = 0
-            border_wall.center_y = y * 64
-            self.wall_list.append(border_wall)
-        # Place the right border.
-        for y in range(1, 15):
-            border_wall = arcade.Sprite(":resources:images/tiles/brickTextureWhite.png", BORDER_SPRITE_SCALING)
-            border_wall.center_x = 1216
-            border_wall.center_y = y * 64
-            self.wall_list.append(border_wall)
+        # Set up the list into which I shall add my levels.
+        self.levels = []
+        level = setup_level_0()
+        self.levels.append(level)
 
-        # Put out some blue gems for the default level.
-        coordinate_list = [[5, 5],
-                           [8,9]]
-        for coordinate in coordinate_list:
-            blue_gem = arcade.Sprite(":resources:images/items/gemBlue.png", GEM_SPRITE_SCALING)
-            blue_gem.center_x = coordinate[0]*64
-            blue_gem.center_y = coordinate[1]*64
-            self.blue_gem_list.append(blue_gem)
+        # Starting level:
+        self.current_level = 0
 
-        # Put out some green gems.
-        coordinate_list = [[2, 9],
-                           [8,2]]
-        for coordinate in coordinate_list:
-            green_gem = arcade.Sprite(":resources:images/items/gemGreen.png", GEM_SPRITE_SCALING)
-            green_gem.center_x = coordinate[0]*64
-            green_gem.center_y = coordinate[1]*64
-            self.green_gem_list.append(green_gem)
-
-        # Put out the gears.
-        coordinate_list = [[11, 5],
-                           [5,12]]
-        for coordinate in coordinate_list:
-            gear = arcade.Sprite(":resources:images/enemies/saw.png", GEAR_SPRITE_SCALING)
-            gear.center_x = coordinate[0]*64
-            gear.center_y = coordinate[1]*64
-            self.gear_list.append(gear)
-
-        # Set out some boxes.
-        coordinate_list = [[3, 7],
-                           [7, 2]]
-        for coordinate in coordinate_list:
-            box = arcade.Sprite(":resources:images/tiles/boxCrate.png", BOX_SPRITE_SCALING)
-            box.center_x = coordinate[0]*64
-            box.center_y = coordinate[1]*64
-            self.wall_list.append(box)
-
-        # Put out some robots for the default level enemies.
-        coordinate_list = [[6, 6],
-                           [10, 10]]
-        for coordinate in coordinate_list:
-            robo = arcade.Sprite(":resources:images/animated_characters/robot/robot_idle.png", ENEMY_SPRITE_SCALING_1)
-            robo.center_x = coordinate[0]*64
-            robo.center_y = coordinate[1]*64
-            self.enemy_list.append(robo)
-
-
-        # Invoke the almighty physics engine.
-        self.physics_engine = arcade.PhysicsEngineSimple(self.player_sprite, self.wall_list)
+        # Set up the physics engine for this level:
+        self.physics_engine = arcade.PhysicsEngineSimple(self.player_sprite, self.levels[self.current_level].wall_list)
 
         # Set the background color
         arcade.set_background_color(arcade.color.DIM_GRAY)
@@ -200,12 +239,12 @@ class MyGame(arcade.Window):
         self.camera_sprites.use()
 
         # Draw the sprites:
-        self.wall_list.draw()
+        self.levels[self.current_level].wall_list.draw()
+        self.levels[self.current_level].blue_gem_list.draw()
+        self.levels[self.current_level].green_gem_list.draw()
+        self.levels[self.current_level].gear_list.draw()
+        self.levels[self.current_level].enemy_list.draw()
         self.player_list.draw()
-        self.blue_gem_list.draw()
-        self.green_gem_list.draw()
-        self.gear_list.draw()
-        self.enemy_list.draw()
 
         # Select the un-scrolled camera for the GUI:
         self.camera_gui.use()
@@ -252,9 +291,9 @@ class MyGame(arcade.Window):
         """ Movement and game logic. """
 
         # Find out which gems and gears have collided with the player.
-        blue_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.blue_gem_list)
-        green_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.green_gem_list)
-        gear_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.gear_list)
+        blue_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.levels[self.current_level].blue_gem_list)
+        green_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.levels[self.current_level].green_gem_list)
+        gear_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.levels[self.current_level].gear_list)
         # Look through those lists and remove/update sprites that have been collected.
         for gem in blue_hit_list:
             gem.remove_from_sprite_lists()
@@ -291,6 +330,8 @@ class MyGame(arcade.Window):
 
         # Update sprites.
         self.physics_engine.update()
+
+        # Insert the logic to check which level we're in, based on if the player has reached the portal.
 
         # Scroll the screen to the player
         self.scroll_to_player()
